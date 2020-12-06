@@ -28,7 +28,7 @@ public class RuleController {
 
 	@GetMapping(path="/getAllRules")
 	public @ResponseBody Iterable<Rule> getAllRules() {
-		// This returns a JSON or XML with the users
+
 		return ruleRepository.findAll();
 	}
 }
