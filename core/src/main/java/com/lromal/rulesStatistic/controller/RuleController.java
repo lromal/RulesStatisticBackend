@@ -2,33 +2,40 @@ package com.lromal.rulesStatistic.controller;
 
 import com.lromal.rulesStatistic.model.Rule;
 import com.lromal.rulesStatistic.repository.RuleRepository;
+import com.lromal.rulesStatistic.service.RuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping(path="/rules")
 public class RuleController {
 
 	@Autowired
-	private RuleRepository ruleRepository;
+	private RuleService ruleService;
 
-	@PostMapping(path="/addRule")
-	public @ResponseBody String addRule (@RequestParam String name) {
+	@PostMapping(path="/add")
+	public @ResponseBody Rule add (@RequestParam String name, @RequestParam(required = false) String notes) {
 
-		Rule rule = new Rule();
-		rule.setName(name);
-		ruleRepository.save(rule);
-		return "OK";
+		return ruleService.add(name, notes);
 	}
 
-	@GetMapping(path="/getAllRules")
-	public @ResponseBody Iterable<Rule> getAllRules() {
+	@PostMapping(path="/update")
+	public @ResponseBody void update (@RequestParam Long id, @RequestParam String name, @RequestParam(required = false) String notes) {
 
-		return ruleRepository.findAll();
+		ruleService.update(id, name, notes);
+	}
+
+	@GetMapping(path="/getAll")
+	public @ResponseBody Iterable<Rule> getAll() {
+
+		return ruleService.getAll();
+	}
+
+	@DeleteMapping(path="/delete")
+	public @ResponseBody void delete (@RequestParam Long id) {
+
+		ruleService.delete(id);
+
 	}
 }
