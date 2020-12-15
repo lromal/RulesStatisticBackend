@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class BreakedRuleService {
@@ -47,15 +48,32 @@ public class BreakedRuleService {
 	}
 
 
-	public void update(Long id, String name, String notes) {
+	public void update(Long breakedRuleId, List<Long> newSubruleIds, Long ruleId) {
 
-		Rule rule = ruleRepository.findById(id).orElse(null);
+		List<BreakedSubrule> breakedSubrules = breakedSubruleRepository.getByBreakedRuleIdAndRuleId(breakedRuleId, ruleId);
 
-		if(rule == null) return;
+		if(breakedSubrules.size() == 0) return;
 
-		rule.setName(name);
-		rule.setNotes(notes);
-		ruleRepository.save(rule);
+		List<Long> subruleIds = breakedSubrules.stream().map(BreakedSubrule::getSubruleId).collect(Collectors.toList());
+
+		breakedSubrules.forEach(it -> {
+
+			if(newSubruleIds.contains(it.getSubruleId())) return;
+
+			breakedSubruleRepository.delete(it);
+		});
+
+		newSubruleIds.forEach(it -> {
+
+			if(subruleIds.contains(it)) return;
+
+			BreakedSubrule breakedSubrule = new BreakedSubrule();
+			breakedSubrule.setRuleId(ruleId);
+			breakedSubrule.setSubruleId(it);
+			breakedSubrule.setBreakedRuleId(breakedRuleId);
+			breakedSubruleRepository.save(breakedSubrule);
+		});
+
 	}
 
 

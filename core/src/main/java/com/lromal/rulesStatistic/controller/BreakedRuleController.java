@@ -30,9 +30,9 @@ public class BreakedRuleController {
 	}
 
 	@PostMapping(path="/update")
-	public @ResponseBody void update (@RequestParam Long id, @RequestParam String name, @RequestParam(required = false) String notes) {
+	public @ResponseBody void update (@RequestParam Long breakedRuleId, @RequestParam Long ruleId, @RequestParam List<Long> subruleIds) {
 
-		ruleService.update(id, name, notes);
+		breakedRuleService.update(breakedRuleId, subruleIds, ruleId);
 	}
 
 	@GetMapping(path="/getAll")

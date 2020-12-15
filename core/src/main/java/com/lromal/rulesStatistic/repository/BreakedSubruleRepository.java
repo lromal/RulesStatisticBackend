@@ -10,5 +10,6 @@ import java.util.List;
 public interface BreakedSubruleRepository extends CrudRepository<BreakedSubrule, Long> {
 
     List<BreakedSubrule> getByBreakedRuleId(Long breakedRuleId);
+    List<BreakedSubrule> getByBreakedRuleIdAndRuleId(Long breakedRuleId, Long ruleId);
 
 }
