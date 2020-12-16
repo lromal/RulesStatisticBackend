@@ -26,15 +26,24 @@ public class BreakedRuleService {
 
 	public BreakedRule add(Date date, final Long ruleId, List<Long> subruleIds) {
 
-		BreakedRule breakedRule = new BreakedRule();
-		breakedRule.setBreakDate(date);
-		breakedRuleRepository.save(breakedRule);
+		BreakedRule breakedRule = breakedRuleRepository.findByBreakDate(date);
+
+		if(breakedRule == null) {
+			breakedRule = new BreakedRule();
+			breakedRule.setBreakDate(date);
+			breakedRuleRepository.save(breakedRule);
+		} else {
+			List<BreakedSubrule> breakedSubrule = breakedSubruleRepository.findByBreakedRuleIdAndRuleId(breakedRule.getId(), ruleId);
+			if(breakedSubrule.size() > 0) return breakedRule;
+		}
+
+		final Long breakedRuleId = breakedRule.getId();
 
 		subruleIds.stream().forEach(subruleId -> {
 
 			BreakedSubrule breakedSubrule = new BreakedSubrule();
 
-			breakedSubrule.setBreakedRuleId(breakedRule.getId());
+			breakedSubrule.setBreakedRuleId(breakedRuleId);
 			breakedSubrule.setRuleId(ruleId);
 			breakedSubrule.setSubruleId(subruleId);
 
@@ -50,7 +59,7 @@ public class BreakedRuleService {
 
 	public void update(Long breakedRuleId, List<Long> newSubruleIds, Long ruleId) {
 
-		List<BreakedSubrule> breakedSubrules = breakedSubruleRepository.getByBreakedRuleIdAndRuleId(breakedRuleId, ruleId);
+		List<BreakedSubrule> breakedSubrules = breakedSubruleRepository.findByBreakedRuleIdAndRuleId(breakedRuleId, ruleId);
 
 		if(breakedSubrules.size() == 0) return;
 
@@ -92,7 +101,7 @@ public class BreakedRuleService {
 
 		if(breakedRule == null) return null;
 
-		List<BreakedSubrule> breakedSubrules = breakedSubruleRepository.getByBreakedRuleId(id);
+		List<BreakedSubrule> breakedSubrules = breakedSubruleRepository.findByBreakedRuleId(id);
 
 		return new BreakedRuleDTO(breakedRule, breakedSubrules);
 	}

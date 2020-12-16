@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface BreakedSubruleRepository extends CrudRepository<BreakedSubrule, Long> {
 
-    List<BreakedSubrule> getByBreakedRuleId(Long breakedRuleId);
-    List<BreakedSubrule> getByBreakedRuleIdAndRuleId(Long breakedRuleId, Long ruleId);
+    List<BreakedSubrule> findByBreakedRuleId(Long breakedRuleId);
+    List<BreakedSubrule> findByBreakedRuleIdAndRuleId(Long breakedRuleId, Long ruleId);
 
 }
