@@ -3,6 +3,8 @@ package com.lromal.rulesStatistic.controller;
 import com.lromal.rulesStatistic.model.BreakedRule;
 import com.lromal.rulesStatistic.model.Rule;
 import com.lromal.rulesStatistic.model.dto.BreakedRuleDTO;
+import com.lromal.rulesStatistic.model.dto.BreakedRuleStatisticsDTO;
+import com.lromal.rulesStatistic.model.dto.BreakedRuleSumDTO;
 import com.lromal.rulesStatistic.service.BreakedRuleService;
 import com.lromal.rulesStatistic.service.RuleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,20 @@ public class BreakedRuleController {
 	BreakedRuleDTO get(Long id) {
 
 		return breakedRuleService.get(id);
+	}
+
+	@GetMapping(path="/getByDatePeriod")
+	public @ResponseBody
+	List<BreakedRuleStatisticsDTO> getByDatePeriod(@RequestParam @DateTimeFormat(pattern="dd.MM.yyyy") Date from, @RequestParam @DateTimeFormat(pattern="dd.MM.yyyy") Date to) {
+
+		return breakedRuleService.getByDatePeriod(from, to);
+	}
+
+	@GetMapping(path="/getByDatePeriod2")
+	public @ResponseBody
+	List<BreakedRuleSumDTO> getByDatePeriod2(@RequestParam @DateTimeFormat(pattern="dd.MM.yyyy") Date from, @RequestParam @DateTimeFormat(pattern="dd.MM.yyyy") Date to) {
+
+		return breakedRuleService.getByDatePeriod2(from, to);
 	}
 
 	@DeleteMapping(path="/delete")

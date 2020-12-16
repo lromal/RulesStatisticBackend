@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface SubruleRepository extends CrudRepository<Subrule, Long> {
     List<Subrule> findByRuleId(Long ruleId);
+    List<Subrule> findByIdIn(List<Long> ids);
 }
