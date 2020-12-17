@@ -1,7 +1,6 @@
 package com.lromal.rulesStatistic.controller;
 
 import com.lromal.rulesStatistic.model.BreakedRule;
-import com.lromal.rulesStatistic.model.Rule;
 import com.lromal.rulesStatistic.model.dto.BreakedRuleDTO;
 import com.lromal.rulesStatistic.model.dto.BreakedRuleStatisticsDTO;
 import com.lromal.rulesStatistic.model.dto.BreakedRuleSumDTO;
@@ -57,11 +56,18 @@ public class BreakedRuleController {
 		return breakedRuleService.getByDatePeriod(from, to);
 	}
 
-	@GetMapping(path="/getByDatePeriod2")
+	@GetMapping(path="/getSumByDatePeriod")
 	public @ResponseBody
-	List<BreakedRuleSumDTO> getByDatePeriod2(@RequestParam @DateTimeFormat(pattern="dd.MM.yyyy") Date from, @RequestParam @DateTimeFormat(pattern="dd.MM.yyyy") Date to) {
+	List<BreakedRuleSumDTO> getSumByDatePeriod(@RequestParam @DateTimeFormat(pattern="dd.MM.yyyy") Date from, @RequestParam @DateTimeFormat(pattern="dd.MM.yyyy") Date to) {
 
-		return breakedRuleService.getByDatePeriod2(from, to);
+		return breakedRuleService.getSumByDatePeriod(from, to);
+	}
+
+	@GetMapping(path="/getGroupedSumByDatePeriod")
+	public @ResponseBody
+	List<BreakedRuleSumDTO> getGroupedSumByDatePeriod(@RequestParam @DateTimeFormat(pattern="dd.MM.yyyy") Date from, @RequestParam @DateTimeFormat(pattern="dd.MM.yyyy") Date to) {
+
+		return breakedRuleService.getGroupedSumByDatePeriod(from, to);
 	}
 
 	@DeleteMapping(path="/delete")
@@ -70,4 +76,12 @@ public class BreakedRuleController {
 		breakedRuleService.delete(id);
 
 	}
+
+	@GetMapping(path="/getFirstBreakedRuleDate")
+	public @ResponseBody
+	Date getFirstBreakedRuleDate() {
+
+		return breakedRuleService.getFirstBreakedRuleDate();
+	}
+
 }

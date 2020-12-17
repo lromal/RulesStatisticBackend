@@ -2,7 +2,6 @@ package com.lromal.rulesStatistic.service;
 
 import com.lromal.rulesStatistic.model.BreakedRule;
 import com.lromal.rulesStatistic.model.BreakedSubrule;
-import com.lromal.rulesStatistic.model.Rule;
 import com.lromal.rulesStatistic.model.Subrule;
 import com.lromal.rulesStatistic.model.dto.BreakedRuleDTO;
 import com.lromal.rulesStatistic.model.dto.BreakedRuleStatisticsDTO;
@@ -91,8 +90,30 @@ public class BreakedRuleService {
 	}
 
 
-	public List<BreakedRuleSumDTO> getByDatePeriod2(Date from, Date to) {
-		List<BreakedRule> breakedRules = breakedRuleRepository.getAllBetweenDates(from, to);
+	public List<BreakedRuleSumDTO> getGroupedSumByDatePeriod(Date from, Date to) {
+		List<BreakedRuleSumDTO> breakedRuleSumDTOs = getSumByDatePeriod(from, to);
+		Map<Long, BreakedRuleSumDTO> groupedBreakedRuleSumDTOs = new HashMap<>();
+
+		breakedRuleSumDTOs.forEach(it -> {
+			BreakedRuleSumDTO breakedRuleSumDTO = groupedBreakedRuleSumDTOs.get(it.getRuleId());
+
+			if(breakedRuleSumDTO == null) {
+				groupedBreakedRuleSumDTOs.put(it.getRuleId(), it);
+				return;
+			}
+
+			breakedRuleSumDTO.setViolatesNumber(breakedRuleSumDTO.getViolatesNumber() + it.getViolatesNumber());
+
+			if(!it.getViolateStatus()) {
+				breakedRuleSumDTO.setViolateStatus(it.getViolateStatus());
+			}
+
+		});
+
+		return new ArrayList<>(groupedBreakedRuleSumDTOs.values());
+	}
+	public List<BreakedRuleSumDTO> getSumByDatePeriod(Date from, Date to) {
+		List<BreakedRule> breakedRules = breakedRuleRepository.findAllBetweenDates(from, to);
 		Map<Long, Integer> breakedSubrulesStatistics = new HashMap<>();
 		List<BreakedRuleSumDTO> result = new ArrayList<>();
 		Set<Long> subruleIds = new HashSet<>();
@@ -117,6 +138,7 @@ public class BreakedRuleService {
 			if(subrule == null) return;
 
 			BreakedRuleSumDTO breakedRuleSumDTO = new BreakedRuleSumDTO();
+			breakedRuleSumDTO.setRuleId(subrule.getRuleId());
 			breakedRuleSumDTO.setSubruleId(key);
 			breakedRuleSumDTO.setViolatesNumber(value);
 			breakedRuleSumDTO.setViolateStatus(subrule.getAllowedViolatesNumber() >= value);
@@ -128,7 +150,7 @@ public class BreakedRuleService {
 	}
 	public List<BreakedRuleStatisticsDTO> getByDatePeriod(Date from, Date to) {
 
-		List<BreakedRule> breakedRules = breakedRuleRepository.getAllBetweenDates(from, to);
+		List<BreakedRule> breakedRules = breakedRuleRepository.findAllBetweenDates(from, to);
 		List<BreakedRuleStatisticsDTO> result = new ArrayList<>();
 
 		breakedRules.forEach(breakedRule -> {
@@ -145,7 +167,7 @@ public class BreakedRuleService {
 				subrulesStatistics.put(breakedSubrule.getRuleId(), count + 1);
 			});
 
-			breakedRuleStatisticsDTO.setBreakedSubrules(subrulesStatistics);
+			breakedRuleStatisticsDTO.setBreakedRules(subrulesStatistics);
 
 			result.add(breakedRuleStatisticsDTO);
 		});
@@ -177,5 +199,13 @@ public class BreakedRuleService {
 
 		breakedRuleRepository.delete(breakedRule);
 
+	}
+
+	public Date getFirstBreakedRuleDate() {
+		Optional<BreakedRule> breakedRule = breakedRuleRepository.findFirstByOrderByBreakDateAsc();
+
+		if(!breakedRule.isPresent()) return new Date();
+
+		return breakedRule.get().getBreakDate();
 	}
 }

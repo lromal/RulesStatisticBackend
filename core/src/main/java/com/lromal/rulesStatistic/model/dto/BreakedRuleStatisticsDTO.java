@@ -13,6 +13,6 @@ public class BreakedRuleStatisticsDTO {
 
 	private Date currentDate;
 	private Date approveDate;
-	private Map<Long,Integer> breakedSubrules;
+	private Map<Long,Integer> breakedRules;
 
 }

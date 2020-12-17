@@ -8,6 +8,7 @@ import java.util.Map;
 @Data
 public class BreakedRuleSumDTO {
 
+	private Long ruleId;
 	private Long subruleId;
 	private Integer violatesNumber;
 	private Boolean violateStatus;
